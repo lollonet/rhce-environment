@@ -22,12 +22,7 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 Vagrant.configure '2' do |config|
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
   config.vm.box_check_update = false
-  config.vm.provision "shell", inline: <<-INPUT
-    # # # # # # BEGIN: Install python interpreter mandatory to use Ansible
-    sudo yum install -y python3
-    # # # # # # END
-  INPUT
-
+  
   config.vm.provider :libvirt do |libvirt|
     libvirt.storage_pool_name = "claudio-libvirt-pool"
     libvirt.nested = true
@@ -98,7 +93,16 @@ Vagrant.configure '2' do |config|
         sudo echo "192.168.101.100 controller controller.example.com" >> /etc/hosts
         # # # # # # END
       INPUT
+    
 
+  
     end # end managed
   end # end loop managed
+
+  config.vm.provision "shell", inline: <<-INPUT
+    # # # # # # BEGIN: Install python interpreter mandatory to use Ansible
+    sudo yum install -y python3
+    # # # # # # END
+  INPUT
+  
 end
