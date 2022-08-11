@@ -30,7 +30,6 @@ Vagrant.configure '2' do |config|
 
   config.vm.provider :libvirt do |libvirt|
     libvirt.storage_pool_name = "claudio-libvirt-pool"
-    libvirt.storage :file, :size => '5G', :bus => 'virtio', :type => 'raw', :discard => 'unmap', :detect_zeroes => 'on'
     libvirt.nested = true
   end # end libvirt
 
@@ -83,6 +82,7 @@ Vagrant.configure '2' do |config|
       node.vm.box = BOX
       node.vm.hostname = "managed#{i}"
       node.vm.provider :libvirt do |libvirt|
+        libvirt.storage :file, :size => '5G', :bus => 'virtio', :type => 'raw', :discard => 'unmap', :detect_zeroes => 'on'
         libvirt.cpus = 2
       end
       node.vm.network "private_network", ip: "192.168.101.#{i + 100}"
