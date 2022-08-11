@@ -10,23 +10,16 @@
 
 # --- Accessing the nodes --- 
 # Each node can be accessed by its short name - controller, managed1, managed2, managed3, managed4
-# Alternatively fqdn can be used, e. g. controller.example.com, managed1.example.com 
+# Alternatively fqdn can be used, e. g. controller.example.com, managed1.example.com
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 NODES_NUMBER = ENV['NODES_NUMBER'] = '4'
 ADDITIONAL_DISK_SIZE = 1024 * 5 # 5GiB
-# USER = ENV['USER'] = 'root'
-# USER_HOME = ENV['USER_HOME'] = '/root'
-# USER_PASSWORD = ENV['USER_PASSWORD'] = 'vagrant'
-# BOX = 'bento/centos-8'
 BOX = 'generic/rhel8'
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
 Vagrant.configure '2' do |config|
-  # config.ssh.username = USER
-  # config.ssh.password = USER_PASSWORD
-  # config.ssh.insert_key = 'true'
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
   config.vm.box_check_update = false
   config.vm.provision "shell", inline: <<-INPUT
@@ -35,17 +28,19 @@ Vagrant.configure '2' do |config|
     # # # # # # END
   INPUT
 
-
   config.vm.provider :libvirt do |libvirt|
     libvirt.storage_pool_name = "claudio-libvirt-pool"
-    libvirt.storage :file, :size => '5G', :bus => 'scsi', :type => 'raw', :discard => 'unmap', :detect_zeroes => 'on'
-    libvirt.machine_virtual_size = 20
+    libvirt.storage :file, :size => '5G', :bus => 'virtio', :type => 'raw', :discard => 'unmap', :detect_zeroes => 'on'
+    libvirt.nested = true
   end # end libvirt
 
   config.vm.define "controller" do |controller|
     controller.vm.box = BOX
     controller.vm.hostname = "controller"
     controller.vm.network "private_network", ip: "192.168.101.100"
+    controller.vm.provider :libvirt do |libvirt|
+      libvirt.cpus = 4
+    end
     controller.vm.provision "shell", inline: <<-INPUT
       # # # # # # BEGIN: Define fqdn and short names
       sudo echo "127.0.0.1 localhost controller controller.example.com" > /etc/hosts
@@ -87,12 +82,11 @@ Vagrant.configure '2' do |config|
     config.vm.define "managed#{i}" do |node|
       node.vm.box = BOX
       node.vm.hostname = "managed#{i}"
+      node.vm.provider :libvirt do |libvirt|
+        libvirt.cpus = 4
+      end
       node.vm.network "private_network", ip: "192.168.101.#{i + 100}"
       node.vm.network "private_network", ip: "192.168.102.#{i + 100}", auto_config: false
-      #unless File.exist? disk_file
-       # node.vm.libvirt.storage :file, :size => ADDITIONAL_DISK_SIZE, :bus => 'scsi', :type => 'raw', :discard => 'unmap', :detect_zeroes => 'on', :path => storage/disk_file 
-      #end
-      
       node.vm.provision "shell", inline: <<-INPUT
         # # # # # # BEGIN: Define fqdn and short names
         sudo echo "127.0.0.1 localhost managed#{i} managed#{i}.example.com" > /etc/hosts
@@ -105,9 +99,6 @@ Vagrant.configure '2' do |config|
         # # # # # # END
       INPUT
 
-      #node.vm.provision "shell", privileged: false, inline: <<-INPUT
-       # cat /vagrant/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
-      #INPUT
     end # end managed
   end # end loop managed
 end
