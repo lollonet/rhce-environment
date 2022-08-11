@@ -39,7 +39,7 @@ Vagrant.configure '2' do |config|
     controller.vm.hostname = "controller"
     controller.vm.network "private_network", ip: "192.168.101.100"
     controller.vm.provider :libvirt do |libvirt|
-      libvirt.cpus = 4
+      libvirt.cpus = 2
     end
     controller.vm.provision "shell", inline: <<-INPUT
       # # # # # # BEGIN: Define fqdn and short names
@@ -83,7 +83,7 @@ Vagrant.configure '2' do |config|
       node.vm.box = BOX
       node.vm.hostname = "managed#{i}"
       node.vm.provider :libvirt do |libvirt|
-        libvirt.cpus = 4
+        libvirt.cpus = 2
       end
       node.vm.network "private_network", ip: "192.168.101.#{i + 100}"
       node.vm.network "private_network", ip: "192.168.102.#{i + 100}", auto_config: false
