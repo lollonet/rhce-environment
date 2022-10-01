@@ -15,16 +15,17 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 NODES_NUMBER = ENV['NODES_NUMBER'] = '4'
 ADDITIONAL_DISK_SIZE = 1024 * 5 # 5GiB
-BOX = 'generic/rhel8'
+BOX = 'generic/ubuntu2004'
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
 Vagrant.configure '2' do |config|
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  # config.vm.synced_folder ".", "/vagrant", type: "9p", accessmode: "mapped"
+  config.vm.synced_folder './', '/vagrant', type: '9p', disabled: false, accessmode: "passthrough"
   config.vm.box_check_update = false
   
   config.vm.provider :libvirt do |libvirt|
-    libvirt.storage_pool_name = "claudio-libvirt-pool"
+    libvirt.storage_pool_name = "default"
     libvirt.nested = true
   end # end libvirt
 
@@ -44,16 +45,12 @@ Vagrant.configure '2' do |config|
         sudo echo "192.168.101.10$i managed$i managed$i.example.com" >> /etc/hosts
       done
       # # # # # # END
-      
-      # # # # # # BEGIN: Install editing tools and repo containing ansible
-      sudo yum install -y epel-release epel-next-release --nogpgcheck
-      # # # # # # END    
     INPUT
   
     controller.vm.provision "shell", privileged: false, inline: <<-INPUT
       # # # # # # BEGIN: Generate public and private key pairs - id_rsa, id_rsa.pub
-      if [ ! -f .ssh/id_rsa ]; then ssh-keygen -N "" -f /home/vagrant/.ssh/id_rsa.pub; fi
-      # cat /home/vagrant/.ssh/id_rsa.pub > /vagrant/id_rsa.pub
+      if [ ! -f .ssh/id_rsa ]; then ssh-keygen -N "" -f /home/vagrant/.ssh/id_rsa; fi
+      sudo cat /home/vagrant/.ssh/id_rsa.pub > /vagrant/id_rsa.pub
       # # # # # # END
       
       # # # # # # BEGIN: Add fingerprints of all managed servers
@@ -68,6 +65,9 @@ Vagrant.configure '2' do |config|
           fi
         done
       done
+      # # # # # # BEGIN: update and install ansible
+      sudo apt update && sudo apt upgrade -y
+      sudo apt install ansible -y
       # # # # # # END
     INPUT
   end # end controller
@@ -100,8 +100,8 @@ Vagrant.configure '2' do |config|
   end # end loop managed
 
   config.vm.provision "shell", inline: <<-INPUT
-    # # # # # # BEGIN: Install python interpreter mandatory to use Ansible
-    sudo yum install -y python3
+    # # # # # # BEGIN: update
+    sudo apt update && sudo apt upgrade -y
     # # # # # # END
   INPUT
   
