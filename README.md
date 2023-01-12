@@ -1,5 +1,5 @@
 # RHCE environment
-This repository is forked from [this repository]https://github.com/mateuszstompor/rhce-environment.
+This repository is forked from [this repository](https://github.com/mateuszstompor/rhce-environment).
 The Vagrant file is modified to use libvirt provider and uses Ubuntu 20.04.
 It contains a vagrant configuration that describes the infrastructure of nodes that can be used for RHCE exam preparation (EX294). The idea of creating such a similar project in comparison to what's currently available is to provide a set of exercises and solutions that are relevant to the configuration and allow the people preparing for the exam to check the exact steps they need to follow in order to solve them
 
