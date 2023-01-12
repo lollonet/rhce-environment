@@ -1,3 +1,14 @@
+Useful vim plugins
+https://github.com/MicahElliott/Rocannon # Ansible completion
+https://www.redhat.com/sysadmin/ansible-configure-vim # playbook to configure vim 
+
+        vim-addons install vim-gitgutter
+        vim-addons install gitgutter
+        vim-addons install pathogen
+        vam install youcompleteme
+        vim-addons install fugitive
+
+
 Trusted controller automation user to managed nodes root user.
 
 Exercise 1 - DONE
@@ -8,3 +19,12 @@ Ansible
     password_hash
 SHELL
     ssh-keyscan
+vim
+    gitgutter
+    fugitive
+    fzf
+    pathogene
+    airline
+    floaterm
+
+
