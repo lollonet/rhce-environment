@@ -13,7 +13,8 @@ Trusted controller automation user to managed nodes root user.
 
 Exercise 1 - DONE
 
-da studiare:
+To study:
+
 Ansible
     lookup
     password_hash
