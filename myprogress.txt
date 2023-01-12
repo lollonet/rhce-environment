@@ -12,6 +12,8 @@ https://www.redhat.com/sysadmin/ansible-configure-vim # playbook to configure vi
 Trusted controller automation user to managed nodes root user.
 
 Exercise 1 - DONE
+Exercise 2 - DONE
+
 
 To study:
 
