@@ -1,0 +1,10 @@
+Trusted controller automation user to managed nodes root user.
+
+Exercise 1 - DONE
+
+da studiare:
+Ansible
+    lookup
+    password_hash
+SHELL
+    ssh-keyscan
